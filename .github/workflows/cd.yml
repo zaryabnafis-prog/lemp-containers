@@ -20,19 +20,24 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             set -e
-            cd /home/ubuntu
+            APP_DIR="/home/ubuntu/lemp-containers"
 
-            
-            if [ ! -d "lemp-containers" ]; then
-              git clone https://github.com/zaryabnafis-prog/lemp-containers.git
+            echo "➡ Checking for application directory..."
+            if [ ! -d "$APP_DIR/.git" ]; then
+              echo "🟡 Directory not found or not a git repo. Cloning fresh..."
+              rm -rf "$APP_DIR"
+              mkdir -p "$APP_DIR"
+              git clone https://github.com/zaryabnafis-prog/lemp-containers.git "$APP_DIR"
             else
-              cd lemp-containers && git pull
+              echo "🟢 Existing repo found. Pulling latest changes..."
+              cd "$APP_DIR"
+              git reset --hard
+              git clean -fd
+              git pull
             fi
 
-            cd lemp-containers
+            cd "$APP_DIR"
             export TAG=latest
 
-            
+            echo "🐳 Starting Docker deployment..."
             docker compose -f docker-compose.prod.yml pull
-            docker compose -f docker-compose.prod.yml up -d --remove-orphans --build
-            docker image prune -f
