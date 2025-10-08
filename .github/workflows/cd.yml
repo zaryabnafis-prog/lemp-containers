@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy to VM via SSH
+      - name: 🚀 Deploy to VM via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -19,25 +19,20 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            set -e
-            APP_DIR="/home/ubuntu/lemp-containers"
+            echo "=== Starting deploy on $(hostname) ==="
+            cd /home/ubuntu/lemp-containers || exit 1
 
-            echo "➡ Checking for application directory..."
-            if [ ! -d "$APP_DIR/.git" ]; then
-              echo "🟡 Directory not found or not a git repo. Cloning fresh..."
-              rm -rf "$APP_DIR"
-              mkdir -p "$APP_DIR"
-              git clone https://github.com/zaryabnafis-prog/lemp-containers.git "$APP_DIR"
-            else
-              echo "🟢 Existing repo found. Pulling latest changes..."
-              cd "$APP_DIR"
-              git reset --hard
-              git clean -fd
-              git pull
-            fi
+            echo "--- Checking Git status ---"
+            git status || exit 1
 
-            cd "$APP_DIR"
-            export TAG=latest
+            echo "--- Resetting repo to main ---"
+            git fetch origin main || exit 1
+            git reset --hard origin/main || exit 1
 
-            echo "🐳 Starting Docker deployment..."
-            docker compose -f docker-compose.prod.yml pull
+            echo "--- Pulling latest code ---"
+            git pull origin main || exit 1
+
+            echo "--- Building and starting containers ---"
+            docker-compose -f docker-compose.prod.yml up -d --build || exit 1
+
+            echo "✅ Deploy completed successfully!"
