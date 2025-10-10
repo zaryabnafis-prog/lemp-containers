@@ -1,4 +1,5 @@
 version: "3.9"
+
 services:
   frontend:
     image: <DOCKERHUB_USER>/three-tier-frontend:${TAG:-latest}
@@ -9,14 +10,14 @@ services:
 
   backend:
     image: <DOCKERHUB_USER>/three-tier-backend:${TAG:-latest}
-  
     environment:
       - DB_HOST=db
       - DB_USER=appuser
       - DB_PASSWORD=apppass
       - DB_NAME=appdb
+    depends_on:
+      - db
 
-  
   db:
     image: mysql:8.4
     environment:
@@ -28,4 +29,5 @@ services:
       - db_data:/var/lib/mysql
       - ./db/init:/docker-entrypoint-initdb.d:ro
 
-    
+volumes:
+  db_data:
