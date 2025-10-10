@@ -1,4 +1,4 @@
-name: CD - Deploy to VM
+name: CD - Deploy LEMP App to VM
 
 on:
   workflow_run:
@@ -33,6 +33,6 @@ jobs:
             git pull origin main || exit 1
 
             echo "--- Building and starting containers ---"
-docker compose -f docker-compose.prod.yml up -d --build || exit 1
+            docker compose -f docker-compose.prod.yml up -d --build || exit 1
 
             echo "✅ Deploy completed successfully!"
