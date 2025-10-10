@@ -2,14 +2,14 @@ version: "3.9"
 
 services:
   frontend:
-    image: <DOCKERHUB_USER>/three-tier-frontend:${TAG:-latest}
+    image: nafis3507/three-tier-frontend:${TAG:-latest}
     ports:
       - "80:80"
     depends_on:
       - backend
 
   backend:
-    image: <DOCKERHUB_USER>/three-tier-backend:${TAG:-latest}
+    image: nafis3507/three-tier-backend:${TAG:-latest}
     environment:
       - DB_HOST=db
       - DB_USER=appuser
