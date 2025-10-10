@@ -20,6 +20,8 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             echo "=== Starting deploy on $(hostname) ==="
+            cd /home/ubuntu/
+            git clone https://github.com/zaryabnafis-prog/lemp-containers.git
             cd /home/ubuntu/lemp-containers || exit 1
 
             echo "--- Checking Git status ---"
